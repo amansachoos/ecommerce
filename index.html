@@ -1,0 +1,1359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>TOKYO Store | High Fashion Minimalist Collection</title>
+  <meta name="description" content="TOKYO Store — Premium high-fashion editorial brand showcasing minimal aesthetic, structural silhouettes and raw textures with secure payments and quick delivery."/>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com" rel="preconnect"/>
+  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+  <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  <script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            background:   "#fbf9f9",
+            surface:      "#ffffff",
+            "surface-2":  "#efeded",
+            "on-bg":      "#1b1c1c",
+            outline:      "#7e7576",
+            "outline-variant": "#cfc4c5",
+            "accent-orange":   "#000000",
+            "accent-gold":     "#5d5f5f",
+            "rose-gold":       "#4c4546",
+            cream:        "#f5f3f3",
+          },
+          borderRadius: {
+            "DEFAULT": "0px",
+            "lg": "0px",
+            "xl": "0px",
+            "full": "9999px"
+          },
+          fontFamily: {
+            display: ["Hanken Grotesk", "sans-serif"],
+            body:    ["Inter", "sans-serif"],
+          },
+          spacing: {
+            gutter: "24px",
+            "container-max": "1280px",
+            "m-desk": "48px",
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    :root { scroll-behavior: smooth; }
+    .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24; }
+    .fill-icon { font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+
+    /* Blueprint dot grid */
+    .blueprint-grid {
+      background-image: radial-gradient(rgba(0,0,0,0.04) 1px, transparent 1px);
+      background-size: 36px 36px;
+    }
+    /* Scrolled nav */
+    .nav-scrolled {
+      background-color: rgba(251,249,249,0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(0,0,0,0.08);
+    }
+    /* Glow blobs */
+    .glow-orange { background: radial-gradient(ellipse at center, rgba(0,0,0,0.03) 0%, transparent 70%); }
+    .glow-rose   { background: radial-gradient(ellipse at center, rgba(93,95,95,0.02) 0%, transparent 70%); }
+
+    /* Accordion */
+    .acc-body { max-height: 0; overflow: hidden; transition: max-height .38s ease; }
+    .acc-body.open { max-height: 600px; }
+    .acc-icon { transition: transform .35s ease; }
+    .acc-icon.open { transform: rotate(180deg); }
+
+    /* Cart drawer */
+    .cart-drawer { transform: translateX(100%); transition: transform .35s cubic-bezier(.4,0,.2,1); }
+    .cart-drawer.open { transform: translateX(0); }
+    .drawer-overlay { opacity: 0; pointer-events: none; transition: opacity .35s; }
+    .drawer-overlay.open { opacity: 1; pointer-events: auto; }
+
+    /* Toast */
+    @keyframes slideIn { from { transform: translateX(110%); opacity:0; } to { transform: translateX(0); opacity:1; } }
+    @keyframes fadeOut { from { opacity:1; } to { opacity:0; } }
+    .toast-in  { animation: slideIn .3s ease forwards; }
+    .toast-out { animation: fadeOut .5s ease forwards; }
+
+    /* Size btn active */
+    .size-active {
+      background-color: #000000 !important;
+      border-color: #000000 !important;
+      color: #fff !important;
+      box-shadow: 0 0 14px rgba(0,0,0,.15);
+    }
+
+    /* Progress bar */
+    .progress-bar { transition: width 1.2s cubic-bezier(.4,0,.2,1); }
+
+    /* Timeline connector */
+    .timeline-connector { width: 2px; background: linear-gradient(to bottom, #000000, transparent); }
+
+    /* Card hover */
+    .product-card { transition: transform .3s ease, box-shadow .3s ease; }
+    .product-card:hover { transform: translateY(-6px); box-shadow: 0 20px 60px rgba(0,0,0,.08); }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width:6px; }
+    ::-webkit-scrollbar-track { background: #fbf9f9; }
+    ::-webkit-scrollbar-thumb { background: #000000; border-radius:0px; }
+
+    /* Section fade-in */
+    .reveal { opacity:0; transform:translateY(32px); transition: opacity .7s ease, transform .7s ease; }
+    .reveal.visible { opacity:1; transform:translateY(0); }
+  </style>
+</head>
+<body class="bg-background dark:bg-surface text-on-bg dark:text-white overflow-x-hidden font-body selection:bg-accent-orange selection:text-white">
+
+<!-- ══════════ TOAST ══════════ -->
+<div id="toast" class="fixed top-24 right-6 z-[200] hidden">
+  <div class="bg-accent-orange text-white px-5 py-3 flex items-center gap-3 shadow-2xl shadow-accent-orange/30 rounded-sm">
+    <span class="material-symbols-outlined fill-icon text-[18px]">check_circle</span>
+    <span id="toast-msg" class="text-sm tracking-wide uppercase font-semibold">Added to Bag</span>
+  </div>
+</div>
+
+<!-- ══════════ CART DRAWER ══════════ -->
+<div id="drawer-overlay" class="drawer-overlay fixed inset-0 z-[150] bg-black/60 backdrop-blur-sm"></div>
+<aside id="cart-drawer" class="cart-drawer fixed right-0 top-0 h-full w-full max-w-sm z-[160] bg-surface border-l border-outline flex flex-col">
+  <div class="flex items-center justify-between px-6 py-5 border-b border-outline">
+    <h3 class="font-display text-lg text-on-bg">Shopping Bag</h3>
+    <button id="cart-close" class="material-symbols-outlined text-outline-variant hover:text-accent-orange transition-colors">close</button>
+  </div>
+  <div id="cart-items" class="flex-1 overflow-y-auto px-6 py-4 space-y-4">
+    <div id="cart-empty" class="flex flex-col items-center justify-center h-64 gap-4 text-outline-variant">
+      <span class="material-symbols-outlined text-5xl">shopping_bag</span>
+      <p class="text-sm uppercase tracking-widest">Your bag is empty</p>
+    </div>
+  </div>
+  <div class="border-t border-outline px-6 py-5 space-y-4">
+    <div class="flex items-center gap-2">
+      <input id="coupon-input" type="text" placeholder="Coupon code (LAUNCH10)" class="flex-1 bg-background border border-outline text-on-bg text-sm px-3 py-2 rounded-sm placeholder-outline-variant focus:outline-none focus:border-accent-orange transition-colors"/>
+      <button id="apply-coupon" class="bg-accent-orange text-white px-4 py-2 text-xs uppercase tracking-widest hover:bg-orange-600 transition-colors">Apply</button>
+    </div>
+    <div id="coupon-msg" class="text-xs text-green-400 hidden">✓ LAUNCH10 applied — 10% off!</div>
+    <div class="space-y-1 text-sm">
+      <div class="flex justify-between text-outline-variant"><span>Subtotal</span><span id="cart-subtotal">₹0</span></div>
+      <div id="cart-disc-row" class="hidden flex justify-between text-green-400"><span>Discount (10%)</span><span id="cart-disc">-₹0</span></div>
+      <div class="flex justify-between text-outline-variant"><span>Shipping</span><span>FREE</span></div>
+      <div class="flex justify-between text-on-bg font-bold text-base pt-2 border-t border-outline"><span>Total</span><span id="cart-total">₹0</span></div>
+    </div>
+    <button id="checkout-btn" class="w-full py-3 bg-accent-orange text-white uppercase tracking-widest text-sm font-semibold hover:bg-orange-600 transition-all active:scale-95">Proceed to Checkout</button>
+  </div>
+</aside>
+
+<!-- ══════════ SIZE MODAL ══════════ -->
+<div id="size-modal-overlay" class="hidden fixed inset-0 z-[180] bg-black/70 backdrop-blur-sm flex items-center justify-center px-4">
+  <div class="bg-surface border border-outline rounded-sm w-full max-w-md p-8 space-y-6">
+    <div class="flex items-center justify-between">
+      <h3 class="font-display text-xl text-on-bg flex items-center gap-2"><span class="material-symbols-outlined text-accent-orange">straighten</span> AI Size Predictor</h3>
+      <button id="size-modal-close" class="material-symbols-outlined text-outline-variant hover:text-accent-orange transition-colors">close</button>
+    </div>
+    <p class="text-sm text-outline-variant">Enter your measurements for a perfect fit recommendation.</p>
+    <div class="space-y-4">
+      <div>
+        <label class="text-xs uppercase tracking-widest text-outline-variant mb-1 block">Height (cm)</label>
+        <input id="height-inp" type="number" min="100" max="220" placeholder="e.g. 170" class="w-full bg-background border border-outline text-on-bg px-4 py-3 text-sm focus:outline-none focus:border-accent-orange transition-colors"/>
+      </div>
+      <div>
+        <label class="text-xs uppercase tracking-widest text-outline-variant mb-1 block">Weight (kg)</label>
+        <input id="weight-inp" type="number" min="30" max="150" placeholder="e.g. 68" class="w-full bg-background border border-outline text-on-bg px-4 py-3 text-sm focus:outline-none focus:border-accent-orange transition-colors"/>
+      </div>
+      <div>
+        <label class="text-xs uppercase tracking-widest text-outline-variant mb-1 block">Fit Preference</label>
+        <select id="fit-pref" class="w-full bg-background border border-outline text-on-bg px-4 py-3 text-sm focus:outline-none focus:border-accent-orange transition-colors">
+          <option value="slim">Slim / Snug Fit</option>
+          <option value="regular" selected>Regular Fit</option>
+          <option value="relaxed">Relaxed / Loose Fit</option>
+        </select>
+      </div>
+    </div>
+    <button id="predict-size-btn" class="w-full py-3 bg-accent-orange text-white uppercase tracking-widest text-sm font-semibold hover:bg-orange-600 transition-all">Predict My Size</button>
+    <div id="size-result" class="hidden border border-accent-orange/40 bg-accent-orange/10 rounded-sm p-4 text-center">
+      <p class="text-xs text-outline-variant uppercase tracking-widest mb-1">Recommended Size</p>
+      <p id="size-val" class="font-display text-3xl text-accent-orange font-bold"></p>
+      <p id="size-note" class="text-xs text-outline-variant mt-1"></p>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ PRODUCT DETAIL MODAL ══════════ -->
+<div id="prod-modal-overlay" class="hidden fixed inset-0 z-[180] bg-black/70 backdrop-blur-sm flex items-center justify-center px-4 py-8">
+  <div class="bg-surface border border-outline rounded-sm w-full max-w-3xl max-h-full overflow-y-auto">
+    <div class="flex items-center justify-between px-6 py-4 border-b border-outline sticky top-0 bg-surface z-10">
+      <h3 id="pm-title" class="font-display text-lg text-on-bg">Product</h3>
+      <button id="prod-modal-close" class="material-symbols-outlined text-outline-variant hover:text-accent-orange transition-colors">close</button>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2">
+      <div class="aspect-square overflow-hidden">
+        <img id="pm-img" src="" alt="" class="w-full h-full object-cover"/>
+      </div>
+      <div class="p-6 space-y-5">
+        <div>
+          <span id="pm-cat" class="text-xs uppercase tracking-widest text-accent-orange"></span>
+          <h2 id="pm-name" class="font-display text-2xl text-on-bg mt-1"></h2>
+          <div id="pm-stars" class="flex gap-0.5 mt-2"></div>
+        </div>
+        <div class="flex items-baseline gap-3">
+          <span id="pm-price" class="text-2xl font-bold text-on-bg"></span>
+          <span id="pm-orig" class="text-sm text-outline-variant line-through"></span>
+          <span id="pm-disc" class="text-xs bg-accent-orange/20 text-accent-orange px-2 py-0.5 rounded-sm font-semibold"></span>
+        </div>
+        <p id="pm-desc" class="text-sm text-outline-variant leading-relaxed"></p>
+        <div>
+          <div class="flex items-center justify-between mb-2">
+            <h4 class="text-xs uppercase tracking-widest text-outline-variant">Size</h4>
+            <button id="pm-size-help" class="text-accent-orange text-xs border-b border-accent-orange hover:text-orange-400 transition-colors">Find My Size</button>
+          </div>
+          <div id="pm-sizes" class="flex gap-2"></div>
+        </div>
+        <div class="flex items-center gap-3">
+          <div class="flex items-center border border-outline rounded-sm">
+            <button id="qty-minus" class="px-3 py-2 text-on-bg hover:text-accent-orange transition-colors">−</button>
+            <span id="qty-val" class="px-4 text-on-bg text-sm">1</span>
+            <button id="qty-plus" class="px-3 py-2 text-on-bg hover:text-accent-orange transition-colors">+</button>
+          </div>
+          <button id="pm-add-bag" class="flex-1 py-3 bg-accent-orange text-white text-sm uppercase tracking-widest font-semibold hover:bg-orange-600 transition-all active:scale-95">Add to Bag</button>
+        </div>
+        <div class="flex gap-4 text-xs text-outline-variant pt-2 border-t border-outline">
+          <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[15px] text-accent-orange">autorenew</span> 15-Day Returns</span>
+          <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[15px] text-accent-orange">verified_user</span> QC Checked</span>
+          <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[15px] text-accent-orange">local_shipping</span> Free Shipping</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ NAV ══════════ -->
+<nav id="main-nav" class="fixed top-0 left-0 right-0 z-[100] flex items-center justify-between px-m-desk py-2 max-w-[1280px] mx-auto w-full transition-all duration-300">
+  <div class="flex items-center gap-10">
+    <a href="astro.html" class="font-display text-2xl font-extrabold tracking-tighter text-on-bg uppercase">TOKYO</a>
+    <div class="hidden md:flex gap-7 items-center">
+      <a href="astro.html" class="text-xs uppercase tracking-widest text-accent-gold hover:text-on-bg transition-colors font-semibold flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">star</span> Astro Premium</a>
+      <a href="#collections" class="text-xs uppercase tracking-widest text-on-bg border-b border-on-bg pb-0.5">Collections</a>
+      <a href="#shop" class="text-xs uppercase tracking-widest text-outline hover:text-on-bg transition-colors">Shop</a>
+      <a href="#dpr-timeline" class="text-xs uppercase tracking-widest text-outline hover:text-on-bg transition-colors">DPR Plan</a>
+      <a href="#financials" class="text-xs uppercase tracking-widest text-outline hover:text-on-bg transition-colors">Financials</a>
+      <a href="#about" class="text-xs uppercase tracking-widest text-outline hover:text-on-bg transition-colors">SWOT & CSR</a>
+    </div>
+  </div>
+  <div class="flex items-center gap-5">
+    <button id="search-toggle" class="material-symbols-outlined text-on-bg hover:text-accent-gold transition-colors">search</button>
+    <div class="relative">
+      <button id="cart-toggle" class="material-symbols-outlined text-on-bg hover:text-accent-gold transition-colors">shopping_bag</button>
+      <span id="cart-badge" class="hidden absolute -top-2 -right-2 w-4 h-4 bg-accent-orange rounded-full text-[10px] text-white font-bold items-center justify-center leading-none">0</span>
+    </div>
+    <button id="theme-toggle" class="material-symbols-outlined text-on-bg hover:text-accent-gold transition-colors">light_mode</button>
+    <button id="mobile-menu-toggle" class="md:hidden material-symbols-outlined text-on-bg">menu</button>
+  </div>
+</nav>
+
+<!-- Mobile Menu -->
+<div id="mobile-menu" class="hidden fixed inset-0 z-[90] bg-background/98 backdrop-blur-md flex flex-col items-center justify-center gap-8 pt-20">
+  <button id="mobile-close" class="absolute top-4 right-6 material-symbols-outlined text-on-bg text-3xl">close</button>
+  <a href="astro.html" class="mobile-nav-link font-display text-3xl text-accent-gold hover:text-on-bg transition-colors">★ Astro Premium</a>
+  <a href="#collections" class="mobile-nav-link font-display text-3xl text-on-bg hover:text-accent-orange transition-colors">Collections</a>
+  <a href="#shop" class="mobile-nav-link font-display text-3xl text-on-bg hover:text-accent-orange transition-colors">Shop</a>
+  <a href="#dpr-timeline" class="mobile-nav-link font-display text-3xl text-on-bg hover:text-accent-orange transition-colors">DPR Plan</a>
+  <a href="#financials" class="mobile-nav-link font-display text-3xl text-on-bg hover:text-accent-orange transition-colors">Financials</a>
+  <a href="#about" class="mobile-nav-link font-display text-3xl text-on-bg hover:text-accent-orange transition-colors">SWOT & CSR</a>
+</div>
+
+<!-- Search Overlay -->
+<div id="search-overlay" class="hidden fixed inset-0 z-[170] bg-black/80 backdrop-blur-md flex items-start justify-center pt-32 px-4">
+  <div class="w-full max-w-2xl">
+    <div class="flex items-center border-b-2 border-accent-orange pb-4">
+      <span class="material-symbols-outlined text-accent-orange mr-4 text-3xl">search</span>
+      <input id="search-input" type="text" placeholder="Search catalog — Kurti, Kurta, Bag, Silk..." class="flex-1 bg-transparent text-white text-2xl focus:outline-none placeholder-outline-variant/60"/>
+      <button id="search-close" class="material-symbols-outlined text-outline-variant hover:text-accent-orange transition-colors ml-4">close</button>
+    </div>
+    <p class="text-xs text-outline-variant/60 mt-3 tracking-widest uppercase">Press Enter to search · Esc to close</p>
+  </div>
+</div>
+
+<main class="blueprint-grid">
+
+  <!-- ══════════ HERO ══════════ -->
+  <section id="hero" class="relative min-h-screen flex items-center overflow-hidden">
+    <!-- Glow blobs -->
+    <div class="glow-orange absolute top-1/4 right-1/4 w-[600px] h-[600px] pointer-events-none"></div>
+    <div class="glow-rose absolute bottom-1/3 left-1/4 w-[400px] h-[400px] pointer-events-none"></div>
+
+    <div class="max-w-[1280px] mx-auto px-m-desk w-full py-20 grid grid-cols-1 md:grid-cols-2 gap-12 items-center relative z-10">
+      <!-- Text -->
+      <div class="space-y-8">
+        <div class="space-y-1">
+          <span class="text-accent-orange text-xs uppercase tracking-[0.3em] font-semibold">D2C Launch · Kochi, India</span>
+          <h1 class="font-display text-5xl md:text-7xl text-on-bg leading-tight">Where Tradition<br/>Meets <span class="text-accent-orange">Tomorrow</span></h1>
+          <p class="text-outline-variant text-base leading-relaxed max-w-md pt-2">India's premium tech-enabled fashion platform — curated ethnic, western & fusion wear with AI-powered styling, secure payments, and pan-India delivery.</p>
+        </div>
+        <div class="flex flex-wrap gap-4">
+          <a href="#shop" class="px-7 py-3.5 bg-accent-orange text-white text-xs uppercase tracking-widest font-semibold hover:bg-orange-600 transition-all active:scale-95 shadow-lg shadow-accent-orange/25">Shop Collection</a>
+          <a href="#dpr-timeline" class="px-7 py-3.5 border border-on-bg/30 text-on-bg text-xs uppercase tracking-widest hover:border-accent-orange hover:text-accent-orange transition-all">DPR 10-Phase Plan</a>
+        </div>
+        <div class="flex flex-wrap gap-4 pt-2">
+          <div class="flex items-center gap-2 text-xs text-outline-variant"><span class="material-symbols-outlined text-accent-orange text-[16px]">recycling</span> 100% Recyclable Packing</div>
+          <div class="flex items-center gap-2 text-xs text-outline-variant"><span class="material-symbols-outlined text-accent-orange text-[16px]">groups</span> 20% Women-SHG Sourced</div>
+          <div class="flex items-center gap-2 text-xs text-outline-variant"><span class="material-symbols-outlined text-accent-orange text-[16px]">auto_awesome</span> AI Size Predictor</div>
+        </div>
+        <!-- KPI Strip -->
+        <div class="grid grid-cols-3 gap-4 pt-4 border-t border-outline/60">
+          <div class="text-center">
+            <p class="font-display text-2xl text-accent-orange font-bold">₹50L</p>
+            <p class="text-[10px] uppercase tracking-widest text-outline-variant">Total Capital</p>
+          </div>
+          <div class="text-center border-x border-outline/40">
+            <p class="font-display text-2xl text-accent-orange font-bold">18M</p>
+            <p class="text-[10px] uppercase tracking-widest text-outline-variant">Break-Even</p>
+          </div>
+          <div class="text-center">
+            <p class="font-display text-2xl text-accent-orange font-bold">₹9Cr+</p>
+            <p class="text-[10px] uppercase tracking-widest text-outline-variant">Yr 3 Revenue</p>
+          </div>
+        </div>
+      </div>
+      <!-- Image card -->
+      <div class="relative flex justify-center">
+        <div class="absolute inset-0 bg-accent-orange/5 blur-[100px] rounded-full scale-110 pointer-events-none"></div>
+        <div class="relative bg-surface/50 border border-outline/50 rounded-sm overflow-hidden w-full max-w-md backdrop-blur-sm">
+          <img src="assets/women_kurti.png" alt="Featured Fusion Wear" class="w-full object-cover aspect-[3/4]" onerror="this.style.display='none'"/>
+          <!-- Blueprint overlay -->
+          <div class="absolute inset-0 border border-accent-orange/20 pointer-events-none">
+            <div class="absolute top-3 left-3 font-mono text-[10px] text-accent-orange opacity-40">FASHION_AUTH: FH_D2C</div>
+            <div class="absolute bottom-3 right-3 font-mono text-[10px] text-accent-orange opacity-40">STYLE_CAL: ACTIVE</div>
+          </div>
+          <div class="absolute bottom-0 left-0 right-0 p-5 bg-gradient-to-t from-black/80 to-transparent">
+            <p class="text-accent-orange text-xs uppercase tracking-widest font-semibold">Grand Launch Sale</p>
+            <p class="text-white text-lg font-display">Starting at ₹499</p>
+            <p class="text-xs text-outline-variant">Use code <span class="text-accent-orange font-bold">LAUNCH10</span> for 10% off</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scroll indicator -->
+    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-outline-variant/40">
+      <span class="text-[10px] uppercase tracking-widest">Scroll</span>
+      <div class="w-px h-10 bg-gradient-to-b from-accent-orange/50 to-transparent"></div>
+    </div>
+  </section>
+
+  <!-- ══════════ FEATURE BAR ══════════ -->
+  <section class="border-y border-outline/20 bg-surface/40 backdrop-blur-sm">
+    <div class="max-w-[1280px] mx-auto px-m-desk py-10 grid grid-cols-2 md:grid-cols-4 gap-8">
+      <div class="space-y-1">
+        <h4 class="font-display text-on-bg uppercase text-base tracking-tight">Pan-India Reach</h4>
+        <p class="text-xs text-outline-variant leading-relaxed">Same-day in metros; 3–5 days anywhere in India via Shiprocket & Delhivery.</p>
+      </div>
+      <div class="space-y-1 md:border-l border-outline/20 md:pl-8">
+        <h4 class="font-display text-on-bg uppercase text-base tracking-tight">AI-Powered Fit</h4>
+        <p class="text-xs text-outline-variant leading-relaxed">Size prediction engine trained on 10,000+ body profiles to cut returns by 40%.</p>
+      </div>
+      <div class="space-y-1 md:border-l border-outline/20 md:pl-8">
+        <h4 class="font-display text-on-bg uppercase text-base tracking-tight">15-Day Returns</h4>
+        <p class="text-xs text-outline-variant leading-relaxed">Hassle-free returns with free pickup and instant refund to original payment method.</p>
+      </div>
+      <div class="space-y-1 md:border-l border-outline/20 md:pl-8">
+        <h4 class="font-display text-on-bg uppercase text-base tracking-tight">Artisan Sourced</h4>
+        <p class="text-xs text-outline-variant leading-relaxed">20% of inventory from women-led SHGs & traditional handloom cooperatives.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════ COLLECTIONS ══════════ -->
+  <section id="collections" class="max-w-[1280px] mx-auto px-m-desk py-24 reveal">
+    <div class="mb-12 text-center space-y-2">
+      <span class="text-accent-orange text-xs uppercase tracking-[0.3em] font-semibold">Browse Range</span>
+      <h2 class="font-display text-4xl md:text-5xl text-on-bg">Our <span class="text-accent-orange">Collections</span></h2>
+      <p class="text-outline-variant text-sm max-w-lg mx-auto">Curated, hand-selected apparel designed for comfort, culture, and contemporary style.</p>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+      <!-- Card -->
+      <div class="group cursor-pointer" data-cat="women" id="cat-women">
+        <div class="aspect-[4/5] overflow-hidden rounded-sm bg-surface relative">
+          <img src="assets/women_kurti.png" alt="Women's Wear" class="w-full h-full object-cover grayscale transition-all duration-700 group-hover:grayscale-0 group-hover:scale-105" onerror="this.style.background='#112233'"/>
+          <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent"></div>
+          <div class="absolute bottom-5 left-5 right-5">
+            <h3 class="font-display text-2xl text-white uppercase">Women's Fusion</h3>
+            <p class="text-xs text-outline-variant">Sarees, Kurtis, Western & Loungewear · ₹349–₹5,999</p>
+            <span class="inline-flex items-center gap-1 text-accent-orange text-xs mt-2 uppercase tracking-widest font-semibold">Explore <span class="material-symbols-outlined text-[14px]">arrow_forward</span></span>
+          </div>
+          <div class="absolute top-4 right-4 bg-accent-orange text-white text-[10px] px-2 py-0.5 uppercase tracking-widest font-bold">40–60% Margin</div>
+        </div>
+      </div>
+      <div class="group cursor-pointer" data-cat="men" id="cat-men">
+        <div class="aspect-[4/5] overflow-hidden rounded-sm bg-surface relative">
+          <img src="assets/men_kurta.png" alt="Men's Wear" class="w-full h-full object-cover grayscale transition-all duration-700 group-hover:grayscale-0 group-hover:scale-105" onerror="this.style.background='#112233'"/>
+          <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent"></div>
+          <div class="absolute bottom-5 left-5 right-5">
+            <h3 class="font-display text-2xl text-white uppercase">Men's Ethnic</h3>
+            <p class="text-xs text-outline-variant">Kurtas, Shirts, Activewear · ₹299–₹3,999</p>
+            <span class="inline-flex items-center gap-1 text-accent-orange text-xs mt-2 uppercase tracking-widest font-semibold">Explore <span class="material-symbols-outlined text-[14px]">arrow_forward</span></span>
+          </div>
+          <div class="absolute top-4 right-4 bg-accent-orange text-white text-[10px] px-2 py-0.5 uppercase tracking-widest font-bold">35–55% Margin</div>
+        </div>
+      </div>
+      <div class="group cursor-pointer" data-cat="accessories" id="cat-accessories">
+        <div class="aspect-[4/5] overflow-hidden rounded-sm bg-surface relative">
+          <img src="assets/luxury_bag.png" alt="Accessories" class="w-full h-full object-cover grayscale transition-all duration-700 group-hover:grayscale-0 group-hover:scale-105" onerror="this.style.background='#112233'"/>
+          <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent"></div>
+          <div class="absolute bottom-5 left-5 right-5">
+            <h3 class="font-display text-2xl text-white uppercase">Premium Accessories</h3>
+            <p class="text-xs text-outline-variant">Bags, Belts, Scarves, Caps · ₹99–₹999</p>
+            <span class="inline-flex items-center gap-1 text-accent-orange text-xs mt-2 uppercase tracking-widest font-semibold">Explore <span class="material-symbols-outlined text-[14px]">arrow_forward</span></span>
+          </div>
+          <div class="absolute top-4 right-4 bg-accent-orange text-white text-[10px] px-2 py-0.5 uppercase tracking-widest font-bold">50–70% Margin</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════ SHOP / CATALOG ══════════ -->
+  <section id="shop" class="max-w-[1280px] mx-auto px-m-desk py-20 reveal">
+    <div class="mb-12 text-center space-y-2">
+      <span class="text-accent-orange text-xs uppercase tracking-[0.3em] font-semibold">Live Catalog</span>
+      <h2 class="font-display text-4xl md:text-5xl text-on-bg">Shop the <span class="text-accent-orange">Catalog</span></h2>
+      <p class="text-outline-variant text-sm">Direct factory pricing. 500+ SKUs at launch. 15-day easy returns.</p>
+    </div>
+
+    <div class="flex flex-col md:flex-row gap-8">
+      <!-- Sidebar Filters -->
+      <aside class="w-full md:w-60 flex-shrink-0 space-y-6">
+        <div class="border border-outline/40 p-5 space-y-5 bg-surface/30">
+          <div>
+            <h4 class="text-xs uppercase tracking-widest text-outline-variant mb-3">Search</h4>
+            <input id="sidebar-search" type="text" placeholder="Type name…" class="w-full bg-background border border-outline text-on-bg text-sm px-3 py-2 focus:outline-none focus:border-accent-orange transition-colors placeholder-outline-variant/50"/>
+          </div>
+          <div>
+            <h4 class="text-xs uppercase tracking-widest text-outline-variant mb-3">Category</h4>
+            <div class="space-y-2">
+              <label class="flex items-center gap-2 cursor-pointer text-sm text-on-bg"><input type="radio" id="filter-cat-all" name="cat-filter" value="all" checked class="category-filter accent-accent-orange"/> All</label>
+              <label class="flex items-center gap-2 cursor-pointer text-sm text-outline-variant hover:text-on-bg"><input type="radio" name="cat-filter" value="women" class="category-filter accent-accent-orange"/> Women's Wear</label>
+              <label class="flex items-center gap-2 cursor-pointer text-sm text-outline-variant hover:text-on-bg"><input type="radio" name="cat-filter" value="men" class="category-filter accent-accent-orange"/> Men's Wear</label>
+              <label class="flex items-center gap-2 cursor-pointer text-sm text-outline-variant hover:text-on-bg"><input type="radio" name="cat-filter" value="accessories" class="category-filter accent-accent-orange"/> Accessories</label>
+            </div>
+          </div>
+          <div>
+            <h4 class="text-xs uppercase tracking-widest text-outline-variant mb-3">Max Price: <span id="price-display" class="text-accent-orange">₹6,000</span></h4>
+            <input id="price-slider" type="range" min="99" max="6000" step="100" value="6000" class="w-full accent-accent-orange"/>
+          </div>
+          <div>
+            <h4 class="text-xs uppercase tracking-widest text-outline-variant mb-3">Sort By</h4>
+            <select id="sort-select" class="w-full bg-background border border-outline text-on-bg text-sm px-3 py-2 focus:outline-none focus:border-accent-orange">
+              <option value="featured">Featured</option>
+              <option value="price-low">Price: Low to High</option>
+              <option value="price-high">Price: High to Low</option>
+              <option value="rating">Rating</option>
+            </select>
+          </div>
+          <button id="clear-filters" class="w-full py-2 border border-outline/40 text-xs uppercase tracking-widest text-outline-variant hover:border-accent-orange hover:text-accent-orange transition-all">Reset Filters</button>
+        </div>
+      </aside>
+
+      <!-- Product Grid -->
+      <div class="flex-1">
+        <div class="flex items-center justify-between mb-5">
+          <span id="prod-count" class="text-xs text-outline-variant uppercase tracking-widest">Showing 3 products</span>
+        </div>
+        <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+        <div id="no-products" class="hidden text-center py-20 text-outline-variant">
+          <span class="material-symbols-outlined text-5xl block mb-3">search_off</span>
+          <p class="text-sm uppercase tracking-widest">No products found</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════ DPR TIMELINE ══════════ -->
+  <section id="dpr-timeline" class="border-t border-outline/20 py-24 reveal">
+    <div class="max-w-[1280px] mx-auto px-m-desk">
+      <div class="mb-14 text-center space-y-2">
+        <span class="text-accent-orange text-xs uppercase tracking-[0.3em] font-semibold">Detailed Project Report · Section 12</span>
+        <h2 class="font-display text-4xl md:text-5xl text-on-bg">10-Phase <span class="text-accent-orange">Implementation Roadmap</span></h2>
+        <p class="text-outline-variant text-sm max-w-xl mx-auto">The phased launch plan for FashionHub from incorporation to pan-India expansion, as outlined in the DPR prepared for bank/investment appraisal.</p>
+      </div>
+
+      <!-- Phase Cards Row -->
+      <div class="overflow-x-auto pb-4">
+        <div class="flex gap-3 min-w-max mb-8" id="phase-tabs">
+          <!-- Injected by JS -->
+        </div>
+      </div>
+
+      <!-- Detail Panel -->
+      <div class="bg-surface/50 border border-outline/40 rounded-sm p-8 backdrop-blur-sm relative" id="phase-detail">
+        <div class="absolute top-0 left-8 w-px h-8 -translate-y-8 bg-accent-orange/60"></div>
+        <div class="flex items-start gap-6">
+          <div class="text-center flex-shrink-0">
+            <div class="w-16 h-16 border-2 border-accent-orange flex items-center justify-center">
+              <span id="pd-num" class="font-display text-2xl text-accent-orange font-bold">01</span>
+            </div>
+          </div>
+          <div class="flex-1">
+            <div class="flex items-start justify-between gap-4 flex-wrap">
+              <div>
+                <span id="pd-dur" class="text-accent-orange text-xs uppercase tracking-widest font-semibold"></span>
+                <h3 id="pd-title" class="font-display text-2xl text-on-bg mt-1"></h3>
+              </div>
+              <span id="pd-milestone" class="text-xs border border-accent-orange/40 bg-accent-orange/10 text-accent-orange px-3 py-1 uppercase tracking-widest"></span>
+            </div>
+            <p id="pd-summary" class="text-outline-variant text-sm leading-relaxed mt-3"></p>
+            <div class="mt-5">
+              <h4 class="text-xs uppercase tracking-widest text-outline-variant mb-3">Key Activities</h4>
+              <ul id="pd-activities" class="space-y-2"></ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════ FINANCIALS ══════════ -->
+  <section id="financials" class="border-t border-outline/20 py-24 reveal">
+    <div class="max-w-[1280px] mx-auto px-m-desk">
+      <div class="mb-14 text-center space-y-2">
+        <span class="text-accent-orange text-xs uppercase tracking-[0.3em] font-semibold">DPR · Section 10</span>
+        <h2 class="font-display text-4xl md:text-5xl text-on-bg">Financial <span class="text-accent-orange">Projections</span></h2>
+        <p class="text-outline-variant text-sm">5-year revenue model, break-even analysis and funding structure from the Detailed Project Report.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+        <!-- Funding Donut (ASCII) -->
+        <div class="bg-surface/40 border border-outline/40 p-6 space-y-4 col-span-1">
+          <h3 class="font-display text-on-bg uppercase text-lg">Funding Pattern</h3>
+          <p class="text-xs text-outline-variant">Total: <span class="text-accent-orange font-bold">₹50,00,000</span></p>
+          <div class="space-y-3">
+            <div>
+              <div class="flex justify-between text-xs mb-1"><span class="text-outline-variant">Promoter's Equity (40%)</span><span class="text-accent-orange font-bold">₹20L</span></div>
+              <div class="h-1.5 bg-outline/20 rounded-full"><div class="progress-bar h-full bg-accent-orange rounded-full" style="width:0%" data-w="40%"></div></div>
+            </div>
+            <div>
+              <div class="flex justify-between text-xs mb-1"><span class="text-outline-variant">Bank Term Loan (50%)</span><span class="text-accent-orange font-bold">₹25L</span></div>
+              <div class="h-1.5 bg-outline/20 rounded-full"><div class="progress-bar h-full bg-rose-gold rounded-full" style="width:0%" data-w="50%"></div></div>
+            </div>
+            <div>
+              <div class="flex justify-between text-xs mb-1"><span class="text-outline-variant">MSME / Startup India (10%)</span><span class="text-accent-orange font-bold">₹5L</span></div>
+              <div class="h-1.5 bg-outline/20 rounded-full"><div class="progress-bar h-full bg-accent-gold rounded-full" style="width:0%" data-w="10%"></div></div>
+            </div>
+          </div>
+          <div class="pt-4 border-t border-outline/40 space-y-2">
+            <h4 class="text-xs uppercase tracking-widest text-outline-variant">Project Cost Heads</h4>
+            <div class="space-y-1 text-xs">
+              <div class="flex justify-between"><span class="text-outline-variant">Technology & Platform</span><span class="text-on-bg">₹10L</span></div>
+              <div class="flex justify-between"><span class="text-outline-variant">Inventory (Opening Stock)</span><span class="text-on-bg">₹15L</span></div>
+              <div class="flex justify-between"><span class="text-outline-variant">Marketing & Branding</span><span class="text-on-bg">₹8L</span></div>
+              <div class="flex justify-between"><span class="text-outline-variant">Warehouse Setup</span><span class="text-on-bg">₹4L</span></div>
+              <div class="flex justify-between"><span class="text-outline-variant">Working Capital (6M)</span><span class="text-on-bg">₹8L</span></div>
+              <div class="flex justify-between"><span class="text-outline-variant">Legal & Licences</span><span class="text-on-bg">₹1L</span></div>
+              <div class="flex justify-between"><span class="text-outline-variant">Contingency (10%)</span><span class="text-on-bg">₹4L</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Revenue Table -->
+        <div class="bg-surface/40 border border-outline/40 p-6 space-y-4 col-span-2">
+          <h3 class="font-display text-on-bg uppercase text-lg">5-Year Revenue Projections</h3>
+          <p class="text-xs text-outline-variant">Annual Order Value (₹) · Avg. Order Value · Net Profit / (Loss)</p>
+          <div class="overflow-x-auto">
+            <table class="w-full text-xs">
+              <thead>
+                <tr class="text-outline-variant uppercase tracking-widest border-b border-outline/30">
+                  <th class="text-left py-2">Year</th>
+                  <th class="text-right py-2">Orders</th>
+                  <th class="text-right py-2">AOV (₹)</th>
+                  <th class="text-right py-2">Revenue</th>
+                  <th class="text-right py-2">Net P&L</th>
+                </tr>
+              </thead>
+              <tbody id="revenue-tbody" class="divide-y divide-outline/10"></tbody>
+            </table>
+          </div>
+          <div class="pt-4 border-t border-outline/40 grid grid-cols-2 gap-4">
+            <div class="bg-accent-orange/10 border border-accent-orange/30 p-4 text-center">
+              <p class="text-xs text-outline-variant uppercase tracking-widest mb-1">Break-Even Revenue</p>
+              <p class="font-display text-xl text-accent-orange font-bold">₹91.2 Lakhs</p>
+            </div>
+            <div class="bg-surface/50 border border-outline/40 p-4 text-center">
+              <p class="text-xs text-outline-variant uppercase tracking-widest mb-1">Break-Even Period</p>
+              <p class="font-display text-xl text-accent-orange font-bold">~18 Months</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Marketing Channels -->
+      <div class="bg-surface/40 border border-outline/40 p-6">
+        <h3 class="font-display text-on-bg uppercase text-lg mb-6">Digital Marketing Channels</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+          <div class="text-center space-y-2">
+            <div class="w-12 h-12 mx-auto border border-accent-orange/30 bg-accent-orange/10 flex items-center justify-center"><span class="material-symbols-outlined text-accent-orange text-[20px]">search</span></div>
+            <p class="text-xs text-on-bg uppercase tracking-widest font-semibold">SEO / Content</p>
+            <p class="text-[10px] text-outline-variant">15% budget · 3–5x ROI</p>
+          </div>
+          <div class="text-center space-y-2">
+            <div class="w-12 h-12 mx-auto border border-accent-orange/30 bg-accent-orange/10 flex items-center justify-center"><span class="material-symbols-outlined text-accent-orange text-[20px]">thumb_up</span></div>
+            <p class="text-xs text-on-bg uppercase tracking-widest font-semibold">Social Ads</p>
+            <p class="text-[10px] text-outline-variant">35% budget · 4–6x ROI</p>
+          </div>
+          <div class="text-center space-y-2">
+            <div class="w-12 h-12 mx-auto border border-accent-orange/30 bg-accent-orange/10 flex items-center justify-center"><span class="material-symbols-outlined text-accent-orange text-[20px]">person_celebrate</span></div>
+            <p class="text-xs text-on-bg uppercase tracking-widest font-semibold">Influencer</p>
+            <p class="text-[10px] text-outline-variant">20% budget · 5–8x ROI</p>
+          </div>
+          <div class="text-center space-y-2">
+            <div class="w-12 h-12 mx-auto border border-accent-orange/30 bg-accent-orange/10 flex items-center justify-center"><span class="material-symbols-outlined text-accent-orange text-[20px]">ads_click</span></div>
+            <p class="text-xs text-on-bg uppercase tracking-widest font-semibold">Google PPC</p>
+            <p class="text-[10px] text-outline-variant">20% budget · 3–4x ROI</p>
+          </div>
+          <div class="text-center space-y-2">
+            <div class="w-12 h-12 mx-auto border border-accent-orange/30 bg-accent-orange/10 flex items-center justify-center"><span class="material-symbols-outlined text-accent-orange text-[20px]">mail</span></div>
+            <p class="text-xs text-on-bg uppercase tracking-widest font-semibold">Email / WhatsApp</p>
+            <p class="text-[10px] text-outline-variant">10% budget · 6–10x ROI</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════ SWOT & CSR ══════════ -->
+  <section id="about" class="border-t border-outline/20 py-24 reveal">
+    <div class="max-w-[1280px] mx-auto px-m-desk">
+      <div class="mb-14 text-center space-y-2">
+        <span class="text-accent-orange text-xs uppercase tracking-[0.3em] font-semibold">DPR · Sections 13 & 14</span>
+        <h2 class="font-display text-4xl md:text-5xl text-on-bg">SWOT & <span class="text-accent-orange">Sustainability</span></h2>
+        <p class="text-outline-variant text-sm">Our competitive position and ethical commitments, as detailed in the FashionHub DPR.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <!-- SWOT -->
+        <div class="bg-surface/40 border border-outline/40 p-6">
+          <h3 class="font-display text-on-bg text-xl mb-5 flex items-center gap-2"><span class="material-symbols-outlined text-accent-orange">pie_chart</span> SWOT Analysis</h3>
+          <div class="grid grid-cols-2 gap-px bg-outline/20">
+            <div class="bg-surface/60 p-4 space-y-2">
+              <h4 class="text-xs uppercase tracking-widest text-green-400 font-bold flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">trending_up</span> Strengths</h4>
+              <ul class="space-y-1 text-xs text-outline-variant">
+                <li>Low overhead vs physical stores</li>
+                <li>Scalable cloud-first model</li>
+                <li>Data-driven catalog buying</li>
+                <li>24/7 availability & wide reach</li>
+              </ul>
+            </div>
+            <div class="bg-surface/60 p-4 space-y-2">
+              <h4 class="text-xs uppercase tracking-widest text-yellow-400 font-bold flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">warning</span> Weaknesses</h4>
+              <ul class="space-y-1 text-xs text-outline-variant">
+                <li>High customer acquisition cost</li>
+                <li>Dependency on logistics partners</li>
+                <li>Intense price wars</li>
+                <li>High return rates in fashion</li>
+              </ul>
+            </div>
+            <div class="bg-surface/60 p-4 space-y-2">
+              <h4 class="text-xs uppercase tracking-widest text-accent-orange font-bold flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">rocket_launch</span> Opportunities</h4>
+              <ul class="space-y-1 text-xs text-outline-variant">
+                <li>Booming Tier 2/3 e-commerce</li>
+                <li>850M+ smartphone users</li>
+                <li>Festive demand spikes</li>
+                <li>Export & corporate gifting</li>
+              </ul>
+            </div>
+            <div class="bg-surface/60 p-4 space-y-2">
+              <h4 class="text-xs uppercase tracking-widest text-red-400 font-bold flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">shield</span> Threats</h4>
+              <ul class="space-y-1 text-xs text-outline-variant">
+                <li>Myntra / Ajio deep pockets</li>
+                <li>Quick commerce entrants</li>
+                <li>Supply chain disruptions</li>
+                <li>Counterfeit risks</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- CSR -->
+        <div class="bg-surface/40 border border-outline/40 p-6 space-y-5">
+          <h3 class="font-display text-on-bg text-xl flex items-center gap-2"><span class="material-symbols-outlined text-accent-orange">eco</span> CSR & Sustainability</h3>
+          <div class="space-y-5">
+            <div class="flex gap-4">
+              <div class="w-10 h-10 bg-accent-orange/10 border border-accent-orange/30 flex-shrink-0 flex items-center justify-center"><span class="material-symbols-outlined text-accent-orange text-[18px]">recycling</span></div>
+              <div>
+                <h4 class="text-on-bg text-sm font-semibold">100% Eco Packaging (24 months)</h4>
+                <p class="text-xs text-outline-variant mt-0.5">Transitioning fully to biodegradable packaging. Digital invoicing to eliminate paper waste.</p>
+              </div>
+            </div>
+            <div class="flex gap-4">
+              <div class="w-10 h-10 bg-accent-orange/10 border border-accent-orange/30 flex-shrink-0 flex items-center justify-center"><span class="material-symbols-outlined text-accent-orange text-[18px]">groups</span></div>
+              <div>
+                <h4 class="text-on-bg text-sm font-semibold">Women Empowerment & Artisan Sourcing</h4>
+                <p class="text-xs text-outline-variant mt-0.5">20% of inventory from women-led SHGs & traditional handloom cooperatives. Internships for fashion graduates from Tier-2 cities.</p>
+              </div>
+            </div>
+            <div class="flex gap-4">
+              <div class="w-10 h-10 bg-accent-orange/10 border border-accent-orange/30 flex-shrink-0 flex items-center justify-center"><span class="material-symbols-outlined text-accent-orange text-[18px]">park</span></div>
+              <div>
+                <h4 class="text-on-bg text-sm font-semibold">Carbon Offset Initiative</h4>
+                <p class="text-xs text-outline-variant mt-0.5">One tree planted per 100 orders in partnership with regional green NGOs. Oeko-Tex certified manufacturers only.</p>
+              </div>
+            </div>
+            <div class="flex gap-4">
+              <div class="w-10 h-10 bg-accent-orange/10 border border-accent-orange/30 flex-shrink-0 flex items-center justify-center"><span class="material-symbols-outlined text-accent-orange text-[18px]">diamond</span></div>
+              <div>
+                <h4 class="text-on-bg text-sm font-semibold">Promote Traditional Handloom</h4>
+                <p class="text-xs text-outline-variant mt-0.5">Dedicated category for traditional Indian handloom weaves and artisan crafts, spotlighting regional craftsmanship.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Risk Table -->
+      <div class="mt-8 bg-surface/40 border border-outline/40 p-6">
+        <h3 class="font-display text-on-bg text-xl mb-5 flex items-center gap-2"><span class="material-symbols-outlined text-accent-orange">gpp_maybe</span> Risk Analysis & Mitigation · DPR Section 11</h3>
+        <div class="overflow-x-auto">
+          <table class="w-full text-xs">
+            <thead>
+              <tr class="text-outline-variant uppercase tracking-widest border-b border-outline/30">
+                <th class="text-left py-2 pr-4">Risk</th>
+                <th class="text-center py-2 pr-4">Likelihood</th>
+                <th class="text-center py-2 pr-4">Impact</th>
+                <th class="text-left py-2">Mitigation</th>
+              </tr>
+            </thead>
+            <tbody id="risk-tbody" class="divide-y divide-outline/10"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ══════════ AI STYLIST WIDGET ══════════ -->
+<div id="ai-widget" class="fixed bottom-6 right-6 z-[120]">
+  <button id="chat-toggle" class="relative w-14 h-14 bg-accent-orange hover:bg-orange-600 transition-colors rounded-full flex items-center justify-center shadow-2xl shadow-accent-orange/40">
+    <span class="material-symbols-outlined text-white text-[22px]" id="chat-icon">auto_awesome</span>
+    <span class="absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full animate-pulse"></span>
+  </button>
+  <div id="chat-drawer" class="hidden absolute bottom-16 right-0 w-80 bg-surface border border-outline rounded-sm shadow-2xl flex flex-col overflow-hidden">
+    <div class="flex items-center gap-3 px-4 py-3 border-b border-outline bg-surface/80">
+      <div class="w-8 h-8 bg-accent-orange/20 border border-accent-orange/30 rounded-full flex items-center justify-center flex-shrink-0"><span class="material-symbols-outlined text-accent-orange text-[16px]">auto_awesome</span></div>
+      <div class="flex-1 min-w-0">
+        <p class="text-on-bg text-sm font-semibold">AI Stylist</p>
+        <p class="text-[10px] text-green-400 uppercase tracking-widest">● Online</p>
+      </div>
+      <button id="chat-close" class="material-symbols-outlined text-outline-variant hover:text-accent-orange transition-colors text-[18px]">close</button>
+    </div>
+    <div id="chat-messages" class="h-64 overflow-y-auto p-4 space-y-3 text-sm">
+      <div class="flex gap-2">
+        <div class="w-6 h-6 bg-accent-orange/20 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5"><span class="material-symbols-outlined text-accent-orange text-[13px]">auto_awesome</span></div>
+        <div class="bg-surface-2 border border-outline/40 rounded-sm px-3 py-2 text-xs text-outline-variant max-w-[85%]">Namaste! 🙏 I'm your FashionHub AI Stylist. I can recommend outfits, explain our 10-phase DPR timeline, or help with sizing. How can I help?</div>
+      </div>
+    </div>
+    <div class="flex flex-wrap gap-2 px-4 pb-2">
+      <button class="suggestion-chip text-[10px] bg-accent-orange/10 border border-accent-orange/30 text-accent-orange px-2 py-1 hover:bg-accent-orange/20 transition-colors" data-q="Suggest a women's festive look">Festive Look</button>
+      <button class="suggestion-chip text-[10px] bg-accent-orange/10 border border-accent-orange/30 text-accent-orange px-2 py-1 hover:bg-accent-orange/20 transition-colors" data-q="Suggest a men's office outfit">Office Casual</button>
+      <button class="suggestion-chip text-[10px] bg-accent-orange/10 border border-accent-orange/30 text-accent-orange px-2 py-1 hover:bg-accent-orange/20 transition-colors" data-q="Explain the 10-phase DPR timeline">DPR Timeline</button>
+      <button class="suggestion-chip text-[10px] bg-accent-orange/10 border border-accent-orange/30 text-accent-orange px-2 py-1 hover:bg-accent-orange/20 transition-colors" data-q="What are your sustainability goals?">Green CSR</button>
+    </div>
+    <div class="flex items-center border-t border-outline">
+      <input id="chat-input" type="text" placeholder="Ask about styles, sizing, DPR…" class="flex-1 bg-transparent text-on-bg text-xs px-4 py-3 focus:outline-none placeholder-outline-variant/50"/>
+      <button id="chat-send" class="px-3 py-3 text-accent-orange hover:text-orange-400 transition-colors"><span class="material-symbols-outlined text-[18px]">send</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ FOOTER ══════════ -->
+<footer class="border-t border-outline/20 bg-surface/20">
+  <div class="max-w-[1280px] mx-auto px-m-desk py-14 grid grid-cols-1 md:grid-cols-4 gap-10">
+    <div class="space-y-3 col-span-1 md:col-span-1">
+      <h3 class="font-display text-2xl text-on-bg">FASHION<span class="text-accent-orange">HUB</span></h3>
+      <p class="text-xs text-outline-variant leading-relaxed">India's premium D2C apparel platform — tech-enabled, sustainability-first, quality-obsessed.</p>
+      <div class="flex gap-4 pt-2">
+        <a href="https://www.instagram.com/ayadicloudversity?igsh=MW41ZXRxZjlxbG0xOA%3D%3D" class="w-8 h-8 border border-outline/40 flex items-center justify-center text-outline-variant hover:border-accent-orange hover:text-accent-orange transition-all" aria-label="Instagram" target="_blank"><span class="material-symbols-outlined text-[16px]">photo_camera</span></a>
+        <a href="#" class="w-8 h-8 border border-outline/40 flex items-center justify-center text-outline-variant hover:border-accent-orange hover:text-accent-orange transition-all" aria-label="Facebook"><span class="material-symbols-outlined text-[16px]">group</span></a>
+        <a href="#" class="w-8 h-8 border border-outline/40 flex items-center justify-center text-outline-variant hover:border-accent-orange hover:text-accent-orange transition-all" aria-label="LinkedIn"><span class="material-symbols-outlined text-[16px]">work</span></a>
+      </div>
+    </div>
+    <div class="space-y-3">
+      <h4 class="text-xs uppercase tracking-widest text-outline-variant font-semibold">Navigation</h4>
+      <ul class="space-y-2">
+        <li><a href="#hero" class="text-xs text-outline-variant hover:text-on-bg transition-colors">Home</a></li>
+        <li><a href="#collections" class="text-xs text-outline-variant hover:text-on-bg transition-colors">Collections</a></li>
+        <li><a href="#shop" class="text-xs text-outline-variant hover:text-on-bg transition-colors">Shop Catalog</a></li>
+        <li><a href="#dpr-timeline" class="text-xs text-outline-variant hover:text-on-bg transition-colors">DPR Plan</a></li>
+        <li><a href="#financials" class="text-xs text-outline-variant hover:text-on-bg transition-colors">Financials</a></li>
+      </ul>
+    </div>
+    <div class="space-y-3">
+      <h4 class="text-xs uppercase tracking-widest text-outline-variant font-semibold">Legal</h4>
+      <ul class="space-y-2">
+        <li><a href="#" class="text-xs text-outline-variant hover:text-on-bg transition-colors">Privacy Policy</a></li>
+        <li><a href="#" class="text-xs text-outline-variant hover:text-on-bg transition-colors">Terms & Conditions</a></li>
+        <li><a href="#" class="text-xs text-outline-variant hover:text-on-bg transition-colors">Shipping Policy</a></li>
+        <li><a href="#" class="text-xs text-outline-variant hover:text-on-bg transition-colors">Return Policy</a></li>
+      </ul>
+    </div>
+    <div class="space-y-3">
+      <h4 class="text-xs uppercase tracking-widest text-outline-variant font-semibold">Registered Office</h4>
+      <p class="text-xs text-outline-variant leading-relaxed">FashionHub E-Commerce Pvt. Ltd.<br/>Kochi, Kerala, India — 682 001</p>
+      <p class="text-xs text-outline-variant">contact@fashionhub.in<br/>+91-484-XXXXXXX</p>
+      <p class="text-xs text-outline-variant/50 pt-2">GSTIN: 32XXXXXXXX · CIN: U52XXX2026PTC</p>
+    </div>
+  </div>
+  <div class="border-t border-outline/10 px-m-desk py-4 max-w-[1280px] mx-auto flex flex-col md:flex-row items-center justify-between gap-3">
+    <p class="text-[10px] text-outline-variant/50 uppercase tracking-widest">© 2026 FashionHub E-Commerce Pvt. Ltd. All rights reserved.</p>
+    <p class="text-[10px] text-outline-variant/50 uppercase tracking-widest">Prepared for Bank / Investment Appraisal · DPR v1.0 · June 2026</p>
+  </div>
+</footer>
+
+<!-- ══════════ APP JAVASCRIPT ══════════ -->
+<script>
+// ────────────────────────────────────────────────────────────
+// DATA
+// ────────────────────────────────────────────────────────────
+
+const PRODUCTS = [
+  { id:1, name:"Silk Fusion Kurti", cat:"women", price:1499, origPrice:2199, rating:4.5, img:"assets/women_kurti.png", desc:"Premium silk-cotton blend kurti with traditional block-print motifs and a modern cut. Hand-dyed with natural colours. Perfect for office and festive occasions.", sizes:["XS","S","M","L","XL"], colors:["Ivory","Teal"] },
+  { id:2, name:"Heritage Kurta Set", cat:"men", price:1899, origPrice:2699, rating:4.7, img:"assets/men_kurta.png", desc:"Premium hand-woven kurta set with matching bottoms. Fabric sourced from Tiruppur artisan weavers. Ideal for festive and semi-formal occasions.", sizes:["S","M","L","XL","XXL"], colors:["White","Navy"] },
+  { id:3, name:"Artisan Leather Bag", cat:"accessories", price:2499, origPrice:3499, rating:4.8, img:"assets/luxury_bag.png", desc:"Handcrafted full-grain leather bag sourced from women-led SHGs in Kerala. Brass hardware, satin lining, and a structured silhouette that transitions from day to evening.", sizes:["One Size"], colors:["Tan","Black"] },
+];
+
+const PHASES = [
+  { num:"01", dur:"Month 1", title:"Planning & Incorporation", summary:"Company registration, trademark filing, bank setup, and statutory licensing under Companies Act 2013.", milestone:"Legal entity established & bank active", activities:["Register Private Limited Company","File trademark for 'FashionHub'","Obtain GST, IEC, Shops & Establishments registrations","Establish corporate bank account & credit lines"] },
+  { num:"02", dur:"Month 2", title:"Core Team Recruitment", summary:"Hiring domain experts for leadership roles in tech, marketing, and warehouse operations.", milestone:"Core management team onboarded", activities:["Hire Tech Lead & Lead Developer (₹80,000/mo CTC)","Onboard Digital Marketing Manager (₹55,000/mo)","Recruit Operations Supervisors & Logistics Administrator","Leverage Kochi's growing tech talent pool"] },
+  { num:"03", dur:"Month 3", title:"Platform UI/UX Design", summary:"Designing a mobile-first, high-fidelity responsive design system for web and mobile app.", milestone:"UI/UX wireframes & design sign-off", activities:["Map out user purchasing journeys & wireframes","Design interactive prototypes for React Web & React Native","Perform accessibility & fast-checkout design audits","Finalise brand identity and style system"] },
+  { num:"04", dur:"Months 3–4", title:"Supplier Onboarding", summary:"Securing direct manufacturer contracts with 50+ vendors and onboarding 3PL shipping logistics.", milestone:"Vendor tie-ups completed & API active", activities:["Finalise MOQs with manufacturers in Tiruppur, Surat & Kolkata","Onboard 20+ ethnic and western fusion vendors","Secure API integrations for Shiprocket & Delhivery","Source 20% inventory from women-led SHGs"] },
+  { num:"05", dur:"Months 4–5", title:"Technology Development", summary:"Coding the React / Next.js store-front and mobile app with secure payment integrations.", milestone:"Application ready in staging environment", activities:["Develop responsive React.js web portal & React Native app","Integrate Razorpay / PayU payment gateways","Set up PostgreSQL database & HubSpot CRM","Deploy on AWS / Google Cloud with 99.9% SLA"] },
+  { num:"06", dur:"Month 6", title:"Warehouse & Operations", summary:"Leasing 3PL space in Kochi/Bengaluru and deploying Inventory Management Software.", milestone:"Warehousing & IMS systems fully operational", activities:["Set up 3PL warehouse (5,000 SKU capacity) in Kochi / Bengaluru","Integrate automated Inventory Management Software","Recruit 4 warehouse staff for packing and QC inspections","Establish 15-day return & QC policy workflow"] },
+  { num:"07", dur:"Months 6–7", title:"Private Beta & QC", summary:"Closed launch for 500 invited users to test full order pipelines and quality controls.", milestone:"First 100 successful orders completed", activities:["Invite select users to test shopping and checkout flows","Perform rigorous Quality Checks on incoming stock batches","Debug payment processing and logistics tracking","Collect NPS feedback and iterate on UX pain points"] },
+  { num:"08", dur:"Months 7–12", title:"Public Launch & Marketing", summary:"Going live to the public with intensive social media ads, influencer campaigns, and PPC.", milestone:"5,000 active customers in 6 months", activities:["Deploy website & launch iOS/Android apps publicly","Execute Instagram, Facebook, YouTube PPC campaigns","Run micro + macro influencer partnerships (20% budget)","Launch referral programme: ₹100 coupon per referral"] },
+  { num:"09", dur:"Months 13–18", title:"Scale-Up & Private Label", summary:"Transitioning to owned mini-warehouse and launching in-house private label line (30% of SKUs).", milestone:"Break-even achieved in month 18", activities:["Transition to owned mini-warehouse in Kochi (15,000 SKUs)","Launch private label designer line (30% of total SKUs)","Fine-tune AI size prediction engine to cut returns by 40%","Expand to second city and launch corporate gifting portal"] },
+  { num:"10", dur:"Year 2–5", title:"Pan-India Expansion", summary:"Scaling to multi-city dark stores, international shipping, and Series A funding rounds.", milestone:"₹25 Crore+ cumulative revenue", activities:["Establish regional multi-city dark stores (50,000+ SKUs)","Introduce premium categories and international shipping","Promote traditional handloom weaves — dedicated artisan category","Raise Series A venture capital to fund next growth phase"] },
+];
+
+const REVENUES = [
+  { year:"Year 1", orders:"18,000", aov:"₹850",  rev:"₹1.53 Cr",  pl:"(₹8.50L)", loss:true },
+  { year:"Year 2", orders:"45,000", aov:"₹920",  rev:"₹4.14 Cr",  pl:"₹18.20L",  loss:false },
+  { year:"Year 3", orders:"90,000", aov:"₹1,000", rev:"₹9.00 Cr",  pl:"₹68.40L",  loss:false },
+  { year:"Year 4", orders:"1,50,000", aov:"₹1,100", rev:"₹16.50 Cr", pl:"₹1.52 Cr", loss:false },
+  { year:"Year 5", orders:"2,20,000", aov:"₹1,200", rev:"₹26.40 Cr", pl:"₹2.88 Cr", loss:false },
+];
+
+const RISKS = [
+  { risk:"High competition (Myntra/Ajio)", like:"High", impact:"High", mit:"Niche curation, superior service, regional focus" },
+  { risk:"Inventory dead stock", like:"Medium", impact:"High", mit:"Data-driven buying, flash sales, limited batches" },
+  { risk:"Logistics delays / failures", like:"Medium", impact:"Medium", mit:"Multi-carrier strategy, real-time tracking" },
+  { risk:"Cybersecurity breach", like:"Low", impact:"Very High", mit:"ISO-certified hosting, PCI-DSS, regular audits" },
+  { risk:"Cash flow shortfall", like:"Medium", impact:"High", mit:"Credit line, conservative buying, early break-even focus" },
+  { risk:"High return rates (>20%)", like:"Medium", impact:"High", mit:"Size prediction AI, detailed images, strict QC" },
+  { risk:"Technology downtime", like:"Low", impact:"High", mit:"99.9% SLA hosting, disaster recovery plan" },
+];
+
+const CHATBOT = {
+  "women":    "For women's festive occasions, I recommend our **Silk Fusion Kurti** (₹1,499) — rich silk-cotton blend with block-print motifs. Pair it with our Artisan Leather Bag for a complete look!",
+  "men":      "For men's office / casual wear, check out our **Heritage Kurta Set** (₹1,899) — hand-woven from Tiruppur artisans, perfect for semi-formal occasions.",
+  "timeline": "FashionHub follows a 10-phase DPR roadmap: Phases 1–3 cover incorporation, team hiring & UI design. Phases 4–6 handle suppliers, tech dev & warehouse setup. Phase 7 is our beta launch. Phases 8–10 cover public launch, scale-up & pan-India expansion!",
+  "csr":      "FashionHub is committed to: 100% recyclable packaging (24 months), 20% inventory from women-led SHGs, one tree planted per 100 orders, and Oeko-Tex certified manufacturers only.",
+  "size":     "Use our AI Size Predictor — just click 'Find My Size' on any product! Enter your height, weight, and fit preference and we'll recommend the perfect size for you.",
+  "price":    "Our pricing is factory-direct: Women's Wear ₹349–₹5,999 · Men's Wear ₹299–₹3,999 · Accessories ₹99–₹999. Use code LAUNCH10 for 10% off your first order!",
+  "default":  "Great question! FashionHub is India's premium D2C fashion platform with curated ethnic, western & fusion wear. I can help with outfit recommendations, sizing, our DPR timeline, pricing, or CSR initiatives. What would you like to know?",
+};
+
+// ────────────────────────────────────────────────────────────
+// STATE
+// ────────────────────────────────────────────────────────────
+let cart = [];
+let couponApplied = false;
+let activePhase = 0;
+let currentProdId = null;
+let currentQty = 1;
+let currentSize = "";
+
+// ────────────────────────────────────────────────────────────
+// NAVBAR SCROLL
+// ────────────────────────────────────────────────────────────
+const nav = document.getElementById("main-nav");
+window.addEventListener("scroll", () => {
+  nav.classList.toggle("nav-scrolled", window.scrollY > 60);
+});
+
+// ────────────────────────────────────────────────────────────
+// MOBILE MENU
+// ────────────────────────────────────────────────────────────
+document.getElementById("mobile-menu-toggle").addEventListener("click", () => {
+  document.getElementById("mobile-menu").classList.remove("hidden");
+  document.getElementById("mobile-menu").classList.add("flex");
+});
+document.getElementById("mobile-close").addEventListener("click", () => {
+  document.getElementById("mobile-menu").classList.add("hidden");
+  document.getElementById("mobile-menu").classList.remove("flex");
+});
+document.querySelectorAll(".mobile-nav-link").forEach(a => {
+  a.addEventListener("click", () => {
+    document.getElementById("mobile-menu").classList.add("hidden");
+    document.getElementById("mobile-menu").classList.remove("flex");
+  });
+});
+
+// ────────────────────────────────────────────────────────────
+// SEARCH OVERLAY
+// ────────────────────────────────────────────────────────────
+document.getElementById("search-toggle").addEventListener("click", () => {
+  document.getElementById("search-overlay").classList.remove("hidden");
+  setTimeout(() => document.getElementById("search-input").focus(), 50);
+});
+document.getElementById("search-close").addEventListener("click", () => document.getElementById("search-overlay").classList.add("hidden"));
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape") {
+    document.getElementById("search-overlay").classList.add("hidden");
+    document.getElementById("size-modal-overlay").classList.add("hidden");
+    document.getElementById("prod-modal-overlay").classList.add("hidden");
+  }
+});
+
+// ────────────────────────────────────────────────────────────
+// CART DRAWER
+// ────────────────────────────────────────────────────────────
+function openCart() {
+  document.getElementById("cart-drawer").classList.add("open");
+  document.getElementById("drawer-overlay").classList.add("open");
+}
+function closeCart() {
+  document.getElementById("cart-drawer").classList.remove("open");
+  document.getElementById("drawer-overlay").classList.remove("open");
+}
+document.getElementById("cart-toggle").addEventListener("click", openCart);
+document.getElementById("cart-close").addEventListener("click", closeCart);
+document.getElementById("drawer-overlay").addEventListener("click", closeCart);
+
+function showToast(msg) {
+  const t = document.getElementById("toast");
+  document.getElementById("toast-msg").textContent = msg;
+  t.classList.remove("hidden");
+  t.classList.add("toast-in");
+  setTimeout(() => { t.classList.add("toast-out"); setTimeout(() => { t.classList.add("hidden"); t.classList.remove("toast-in","toast-out"); }, 500); }, 2500);
+}
+
+function updateCartBadge() {
+  const total = cart.reduce((s, i) => s + i.qty, 0);
+  const badge = document.getElementById("cart-badge");
+  badge.textContent = total;
+  badge.style.display = total > 0 ? "flex" : "none";
+  badge.classList.toggle("hidden", total === 0);
+}
+
+function renderCart() {
+  const container = document.getElementById("cart-items");
+  const empty = document.getElementById("cart-empty");
+  const summary = document.getElementById("cart-summary");
+
+  if (cart.length === 0) {
+    empty.style.display = "flex";
+    document.getElementById("coupon-msg").classList.add("hidden");
+    document.getElementById("cart-disc-row").classList.add("hidden");
+    document.getElementById("cart-subtotal").textContent = "₹0";
+    document.getElementById("cart-total").textContent = "₹0";
+    return;
+  }
+  empty.style.display = "none";
+
+  // Remove old items (keep empty + coupon siblings)
+  document.querySelectorAll(".cart-item-row").forEach(el => el.remove());
+
+  cart.forEach(item => {
+    const row = document.createElement("div");
+    row.className = "cart-item-row flex gap-3 items-start";
+    row.innerHTML = `
+      <div class="w-16 h-16 bg-outline/20 flex-shrink-0 overflow-hidden rounded-sm">
+        <img src="${item.img}" alt="${item.name}" class="w-full h-full object-cover" onerror="this.style.display='none'"/>
+      </div>
+      <div class="flex-1 min-w-0">
+        <p class="text-on-bg text-sm font-semibold truncate">${item.name}</p>
+        <p class="text-[10px] text-outline-variant uppercase tracking-wider">${item.size} · ${item.color}</p>
+        <div class="flex items-center justify-between mt-1">
+          <p class="text-accent-orange text-sm font-bold">₹${(item.price * item.qty).toLocaleString("en-IN")}</p>
+          <div class="flex items-center gap-2">
+            <button class="qty-btn text-on-bg hover:text-accent-orange text-xs px-1" data-id="${item.id}" data-size="${item.size}" data-color="${item.color}" data-delta="-1">−</button>
+            <span class="text-on-bg text-xs">${item.qty}</span>
+            <button class="qty-btn text-on-bg hover:text-accent-orange text-xs px-1" data-id="${item.id}" data-size="${item.size}" data-color="${item.color}" data-delta="1">+</button>
+            <button class="rm-btn text-outline-variant hover:text-red-400 transition-colors ml-1" data-id="${item.id}" data-size="${item.size}" data-color="${item.color}"><span class="material-symbols-outlined text-[14px]">delete</span></button>
+          </div>
+        </div>
+      </div>`;
+    container.insertBefore(row, empty);
+  });
+
+  document.querySelectorAll(".qty-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const { id, size, color, delta } = btn.dataset;
+      const idx = cart.findIndex(i => i.id == id && i.size === size && i.color === color);
+      if (idx >= 0) { cart[idx].qty = Math.max(1, cart[idx].qty + parseInt(delta)); renderCart(); updateCartBadge(); }
+    });
+  });
+  document.querySelectorAll(".rm-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const { id, size, color } = btn.dataset;
+      cart = cart.filter(i => !(i.id == id && i.size === size && i.color === color));
+      renderCart(); updateCartBadge();
+    });
+  });
+
+  const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
+  const disc = couponApplied ? Math.round(subtotal * 0.1) : 0;
+  const total = subtotal - disc;
+  document.getElementById("cart-subtotal").textContent = "₹" + subtotal.toLocaleString("en-IN");
+  document.getElementById("cart-disc").textContent = "-₹" + disc.toLocaleString("en-IN");
+  document.getElementById("cart-disc-row").classList.toggle("hidden", !couponApplied);
+  document.getElementById("cart-total").textContent = "₹" + total.toLocaleString("en-IN");
+}
+
+function addToCart(product, size, color, qty) {
+  const idx = cart.findIndex(i => i.id === product.id && i.size === size && i.color === color);
+  if (idx >= 0) { cart[idx].qty += qty; }
+  else { cart.push({ ...product, size, color, qty }); }
+  renderCart(); updateCartBadge();
+  showToast(`${product.name} · ${size} — Added to Bag`);
+}
+
+// Coupon
+document.getElementById("apply-coupon").addEventListener("click", () => {
+  const code = document.getElementById("coupon-input").value.trim().toUpperCase();
+  if (code === "LAUNCH10") {
+    couponApplied = true;
+    document.getElementById("coupon-msg").classList.remove("hidden");
+    renderCart();
+  } else {
+    document.getElementById("coupon-msg").textContent = "✗ Invalid coupon code";
+    document.getElementById("coupon-msg").classList.remove("hidden", "text-green-400");
+    document.getElementById("coupon-msg").classList.add("text-red-400");
+  }
+});
+
+document.getElementById("checkout-btn").addEventListener("click", () => { showToast("Redirecting to checkout…"); closeCart(); });
+
+// ────────────────────────────────────────────────────────────
+// PRODUCT GRID
+// ────────────────────────────────────────────────────────────
+function discPct(p) { return Math.round((1 - p.price / p.origPrice) * 100); }
+
+function stars(r) {
+  let s = "";
+  for (let i = 1; i <= 5; i++) {
+    if (i <= Math.floor(r)) s += '<span class="material-symbols-outlined fill-icon text-accent-orange text-[14px]">star</span>';
+    else if (i - 0.5 <= r) s += '<span class="material-symbols-outlined text-accent-orange text-[14px]" style="font-variation-settings:\'FILL\' .5,\'wght\' 300,\'GRAD\' 0,\'opsz\' 24">star_half</span>';
+    else s += '<span class="material-symbols-outlined text-outline-variant text-[14px]">star</span>';
+  }
+  return s;
+}
+
+function renderProducts(list) {
+  const grid = document.getElementById("product-grid");
+  const none = document.getElementById("no-products");
+  document.getElementById("prod-count").textContent = `Showing ${list.length} product${list.length !== 1 ? "s" : ""}`;
+  if (!list.length) { grid.innerHTML = ""; none.classList.remove("hidden"); return; }
+  none.classList.add("hidden");
+  grid.innerHTML = list.map(p => `
+    <div class="product-card bg-surface/50 border border-outline/40 rounded-sm overflow-hidden cursor-pointer group" data-pid="${p.id}">
+      <div class="aspect-[3/4] overflow-hidden bg-surface relative">
+        <img src="${p.img}" alt="${p.name}" class="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700" onerror="this.style.background='#112233'"/>
+        <div class="absolute top-3 right-3 bg-accent-orange text-white text-[10px] px-2 py-0.5 font-bold">${discPct(p)}% OFF</div>
+        <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
+          <button class="quick-add w-full py-2 bg-accent-orange text-white text-xs uppercase tracking-widest font-semibold hover:bg-orange-600 transition-colors" data-pid="${p.id}">Quick Add</button>
+        </div>
+      </div>
+      <div class="p-4 space-y-1">
+        <span class="text-[10px] uppercase tracking-widest text-accent-orange/80">${p.cat === "women" ? "Women's" : p.cat === "men" ? "Men's" : "Accessories"}</span>
+        <h3 class="text-on-bg text-sm font-semibold group-hover:text-accent-orange transition-colors">${p.name}</h3>
+        <div class="flex gap-0.5">${stars(p.rating)}</div>
+        <div class="flex items-baseline gap-2 pt-1">
+          <span class="text-accent-orange font-bold">₹${p.price.toLocaleString("en-IN")}</span>
+          <span class="text-outline-variant text-xs line-through">₹${p.origPrice.toLocaleString("en-IN")}</span>
+        </div>
+      </div>
+    </div>`).join("");
+
+  // Product card click → detail modal
+  grid.querySelectorAll(".product-card").forEach(card => {
+    card.addEventListener("click", e => {
+      if (e.target.closest(".quick-add")) return;
+      openProductModal(parseInt(card.dataset.pid));
+    });
+  });
+  // Quick add
+  grid.querySelectorAll(".quick-add").forEach(btn => {
+    btn.addEventListener("click", e => {
+      e.stopPropagation();
+      const p = PRODUCTS.find(x => x.id === parseInt(btn.dataset.pid));
+      addToCart(p, p.sizes[0], p.colors[0], 1);
+    });
+  });
+}
+
+// Filter + Sort
+function applyFilters() {
+  const catEl = document.querySelector('input[name="cat-filter"]:checked');
+  const cat = catEl ? catEl.value : "all";
+  const maxP = parseInt(document.getElementById("price-slider").value);
+  const q = document.getElementById("sidebar-search").value.toLowerCase();
+  const sort = document.getElementById("sort-select").value;
+  let list = PRODUCTS.filter(p => (cat === "all" || p.cat === cat) && p.price <= maxP && p.name.toLowerCase().includes(q));
+  if (sort === "price-low") list.sort((a,b) => a.price - b.price);
+  else if (sort === "price-high") list.sort((a,b) => b.price - a.price);
+  else if (sort === "rating") list.sort((a,b) => b.rating - a.rating);
+  renderProducts(list);
+}
+
+document.querySelectorAll('input[name="cat-filter"]').forEach(i => i.addEventListener("change", applyFilters));
+document.getElementById("price-slider").addEventListener("input", e => {
+  document.getElementById("price-display").textContent = "₹" + parseInt(e.target.value).toLocaleString("en-IN");
+  applyFilters();
+});
+document.getElementById("sidebar-search").addEventListener("input", applyFilters);
+document.getElementById("sort-select").addEventListener("change", applyFilters);
+document.getElementById("clear-filters").addEventListener("click", () => {
+  document.querySelector('input[name="cat-filter"][value="all"]').checked = true;
+  document.getElementById("price-slider").value = 6000;
+  document.getElementById("price-display").textContent = "₹6,000";
+  document.getElementById("sidebar-search").value = "";
+  document.getElementById("sort-select").value = "featured";
+  applyFilters();
+});
+
+// ────────────────────────────────────────────────────────────
+// PRODUCT DETAIL MODAL
+// ────────────────────────────────────────────────────────────
+function openProductModal(pid) {
+  const p = PRODUCTS.find(x => x.id === pid);
+  if (!p) return;
+  currentProdId = pid;
+  currentQty = 1;
+  currentSize = p.sizes[1] || p.sizes[0];
+
+  document.getElementById("pm-title").textContent = p.name;
+  document.getElementById("pm-img").src = p.img;
+  document.getElementById("pm-img").alt = p.name;
+  document.getElementById("pm-cat").textContent = p.cat === "women" ? "Women's Wear" : p.cat === "men" ? "Men's Wear" : "Accessories";
+  document.getElementById("pm-name").textContent = p.name;
+  document.getElementById("pm-stars").innerHTML = stars(p.rating);
+  document.getElementById("pm-price").textContent = "₹" + p.price.toLocaleString("en-IN");
+  document.getElementById("pm-orig").textContent = "₹" + p.origPrice.toLocaleString("en-IN");
+  document.getElementById("pm-disc").textContent = discPct(p) + "% OFF";
+  document.getElementById("pm-desc").textContent = p.desc;
+  document.getElementById("qty-val").textContent = 1;
+
+  const sizesEl = document.getElementById("pm-sizes");
+  sizesEl.innerHTML = p.sizes.map(s => `<button class="pm-size-btn h-9 px-3 border text-xs transition-all ${s === currentSize ? "border-accent-orange bg-accent-orange text-white" : "border-outline/40 text-outline-variant hover:border-accent-orange hover:text-on-bg"}" data-s="${s}">${s}</button>`).join("");
+  sizesEl.querySelectorAll(".pm-size-btn").forEach(b => {
+    b.addEventListener("click", () => {
+      currentSize = b.dataset.s;
+      sizesEl.querySelectorAll(".pm-size-btn").forEach(x => { x.className = `pm-size-btn h-9 px-3 border text-xs transition-all border-outline/40 text-outline-variant hover:border-accent-orange hover:text-on-bg`; });
+      b.className = `pm-size-btn h-9 px-3 border text-xs transition-all border-accent-orange bg-accent-orange text-white`;
+    });
+  });
+
+  document.getElementById("prod-modal-overlay").classList.remove("hidden");
+  document.body.style.overflow = "hidden";
+}
+
+document.getElementById("prod-modal-close").addEventListener("click", () => {
+  document.getElementById("prod-modal-overlay").classList.add("hidden");
+  document.body.style.overflow = "";
+});
+document.getElementById("prod-modal-overlay").addEventListener("click", e => {
+  if (e.target === document.getElementById("prod-modal-overlay")) {
+    document.getElementById("prod-modal-overlay").classList.add("hidden");
+    document.body.style.overflow = "";
+  }
+});
+
+document.getElementById("qty-minus").addEventListener("click", () => { currentQty = Math.max(1, currentQty-1); document.getElementById("qty-val").textContent = currentQty; });
+document.getElementById("qty-plus").addEventListener("click", () => { currentQty++; document.getElementById("qty-val").textContent = currentQty; });
+document.getElementById("pm-add-bag").addEventListener("click", () => {
+  const p = PRODUCTS.find(x => x.id === currentProdId);
+  addToCart(p, currentSize, p.colors[0], currentQty);
+  document.getElementById("prod-modal-overlay").classList.add("hidden");
+  document.body.style.overflow = "";
+  openCart();
+});
+document.getElementById("pm-size-help").addEventListener("click", () => {
+  document.getElementById("prod-modal-overlay").classList.add("hidden");
+  document.getElementById("size-modal-overlay").classList.remove("hidden");
+});
+
+// ────────────────────────────────────────────────────────────
+// SIZE PREDICTOR MODAL
+// ────────────────────────────────────────────────────────────
+document.getElementById("size-modal-close").addEventListener("click", () => document.getElementById("size-modal-overlay").classList.add("hidden"));
+document.getElementById("size-modal-overlay").addEventListener("click", e => {
+  if (e.target === document.getElementById("size-modal-overlay")) document.getElementById("size-modal-overlay").classList.add("hidden");
+});
+document.getElementById("predict-size-btn").addEventListener("click", () => {
+  const h = parseFloat(document.getElementById("height-inp").value);
+  const w = parseFloat(document.getElementById("weight-inp").value);
+  const fit = document.getElementById("fit-pref").value;
+  if (!h || !w || h < 100 || h > 220 || w < 30 || w > 150) {
+    showToast("Please enter valid height (100–220cm) & weight (30–150kg)");
+    return;
+  }
+  const bmi = w / ((h/100) ** 2);
+  let size, note;
+  const adj = fit === "slim" ? -1 : fit === "relaxed" ? 1 : 0;
+  const idx = bmi < 18.5 ? 0 : bmi < 23 ? 1 : bmi < 27 ? 2 : bmi < 30 ? 3 : 4;
+  const sizes = ["XS","S","M","L","XL"];
+  size = sizes[Math.min(4, Math.max(0, idx + adj))];
+  note = `BMI ${bmi.toFixed(1)} · ${fit} fit · Based on FashionHub size chart v2.0`;
+  document.getElementById("size-val").textContent = size;
+  document.getElementById("size-note").textContent = note;
+  document.getElementById("size-result").classList.remove("hidden");
+});
+
+// ────────────────────────────────────────────────────────────
+// DPR TIMELINE
+// ────────────────────────────────────────────────────────────
+function renderPhaseDetail(idx) {
+  const p = PHASES[idx];
+  document.getElementById("pd-num").textContent = p.num;
+  document.getElementById("pd-dur").textContent = p.dur;
+  document.getElementById("pd-title").textContent = p.title;
+  document.getElementById("pd-milestone").textContent = "🚩 " + p.milestone;
+  document.getElementById("pd-summary").textContent = p.summary;
+  document.getElementById("pd-activities").innerHTML = p.activities.map(a => `<li class="flex items-start gap-2 text-sm text-outline-variant"><span class="text-accent-orange mt-0.5 flex-shrink-0">▸</span>${a}</li>`).join("");
+}
+
+function buildPhaseTabs() {
+  const container = document.getElementById("phase-tabs");
+  container.innerHTML = PHASES.map((p, i) => `
+    <button class="phase-tab flex-shrink-0 px-4 py-3 border text-xs uppercase tracking-widest transition-all ${i === 0 ? "border-accent-orange bg-accent-orange/20 text-on-bg" : "border-outline/30 text-outline-variant hover:border-accent-orange/50 hover:text-on-bg"}" data-i="${i}">
+      <span class="font-display text-base block text-current">${p.num}</span>
+      <span class="block mt-0.5 truncate max-w-[100px]">${p.title}</span>
+    </button>`).join("");
+  container.querySelectorAll(".phase-tab").forEach(btn => {
+    btn.addEventListener("click", () => {
+      activePhase = parseInt(btn.dataset.i);
+      container.querySelectorAll(".phase-tab").forEach(b => { b.className = "phase-tab flex-shrink-0 px-4 py-3 border text-xs uppercase tracking-widest transition-all border-outline/30 text-outline-variant hover:border-accent-orange/50 hover:text-on-bg"; });
+      btn.className = "phase-tab flex-shrink-0 px-4 py-3 border text-xs uppercase tracking-widest transition-all border-accent-orange bg-accent-orange/20 text-on-bg";
+      renderPhaseDetail(activePhase);
+    });
+  });
+}
+
+// ────────────────────────────────────────────────────────────
+// FINANCIALS
+// ────────────────────────────────────────────────────────────
+function buildRevenueTable() {
+  document.getElementById("revenue-tbody").innerHTML = REVENUES.map(r => `
+    <tr class="hover:bg-accent-orange/5 transition-colors">
+      <td class="py-2 pr-4 font-semibold text-on-bg">${r.year}</td>
+      <td class="py-2 pr-4 text-right text-outline-variant">${r.orders}</td>
+      <td class="py-2 pr-4 text-right text-outline-variant">${r.aov}</td>
+      <td class="py-2 pr-4 text-right text-on-bg font-semibold">${r.rev}</td>
+      <td class="py-2 text-right font-bold ${r.loss ? "text-red-400" : "text-green-400"}">${r.pl}</td>
+    </tr>`).join("");
+}
+
+function buildRiskTable() {
+  const likeColor = l => l === "High" ? "text-red-400" : l === "Low" ? "text-green-400" : "text-yellow-400";
+  document.getElementById("risk-tbody").innerHTML = RISKS.map(r => `
+    <tr class="hover:bg-accent-orange/5 transition-colors">
+      <td class="py-2 pr-4 text-outline-variant">${r.risk}</td>
+      <td class="py-2 pr-4 text-center font-semibold ${likeColor(r.like)}">${r.like}</td>
+      <td class="py-2 pr-4 text-center font-semibold ${likeColor(r.impact)}">${r.impact}</td>
+      <td class="py-2 text-outline-variant">${r.mit}</td>
+    </tr>`).join("");
+}
+
+// ────────────────────────────────────────────────────────────
+// CHATBOT
+// ────────────────────────────────────────────────────────────
+document.getElementById("chat-toggle").addEventListener("click", () => {
+  const d = document.getElementById("chat-drawer");
+  const hidden = d.classList.contains("hidden");
+  d.classList.toggle("hidden", !hidden);
+  d.classList.toggle("flex", hidden);
+  d.style.display = hidden ? "flex" : "none";
+  d.style.flexDirection = hidden ? "column" : "";
+  document.getElementById("chat-icon").textContent = hidden ? "close" : "auto_awesome";
+});
+document.getElementById("chat-close").addEventListener("click", () => {
+  document.getElementById("chat-drawer").style.display = "none";
+  document.getElementById("chat-icon").textContent = "auto_awesome";
+});
+
+function appendMsg(text, isUser) {
+  const box = document.getElementById("chat-messages");
+  const div = document.createElement("div");
+  div.className = `flex gap-2 ${isUser ? "flex-row-reverse" : ""}`;
+  div.innerHTML = `
+    ${!isUser ? `<div class="w-6 h-6 bg-accent-orange/20 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5"><span class="material-symbols-outlined text-accent-orange text-[13px]">auto_awesome</span></div>` : ""}
+    <div class="${isUser ? "bg-accent-orange/20 border border-accent-orange/30 text-on-bg ml-8" : "bg-surface-2 border border-outline/40 text-outline-variant mr-8"} rounded-sm px-3 py-2 text-xs leading-relaxed">${text}</div>`;
+  box.appendChild(div);
+  box.scrollTop = box.scrollHeight;
+}
+
+function getBotReply(q) {
+  const l = q.toLowerCase();
+  if (l.includes("women") || l.includes("festive") || l.includes("kurti") || l.includes("saree")) return CHATBOT.women;
+  if (l.includes("men") || l.includes("office") || l.includes("kurta")) return CHATBOT.men;
+  if (l.includes("timeline") || l.includes("dpr") || l.includes("phase") || l.includes("plan")) return CHATBOT.timeline;
+  if (l.includes("sustain") || l.includes("csr") || l.includes("green") || l.includes("eco")) return CHATBOT.csr;
+  if (l.includes("size") || l.includes("fit") || l.includes("measurement")) return CHATBOT.size;
+  if (l.includes("price") || l.includes("cost") || l.includes("discount") || l.includes("coupon")) return CHATBOT.price;
+  return CHATBOT.default;
+}
+
+function sendChat(q) {
+  if (!q.trim()) return;
+  appendMsg(q, true);
+  setTimeout(() => appendMsg(getBotReply(q), false), 600);
+}
+
+document.getElementById("chat-send").addEventListener("click", () => {
+  const inp = document.getElementById("chat-input");
+  sendChat(inp.value); inp.value = "";
+});
+document.getElementById("chat-input").addEventListener("keydown", e => {
+  if (e.key === "Enter") { const inp = e.target; sendChat(inp.value); inp.value = ""; }
+});
+document.querySelectorAll(".suggestion-chip").forEach(btn => {
+  btn.addEventListener("click", () => sendChat(btn.dataset.q));
+});
+
+// ────────────────────────────────────────────────────────────
+// SCROLL REVEAL
+// ────────────────────────────────────────────────────────────
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add("visible"); } });
+}, { threshold: 0.1 });
+document.querySelectorAll(".reveal").forEach(el => observer.observe(el));
+
+// Progress bars on scroll into view
+const progressObserver = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.querySelectorAll(".progress-bar").forEach(bar => {
+        bar.style.width = bar.dataset.w;
+      });
+    }
+  });
+}, { threshold: 0.3 });
+document.querySelectorAll("#financials").forEach(el => progressObserver.observe(el));
+
+// ────────────────────────────────────────────────────────────
+// INIT
+// ────────────────────────────────────────────────────────────
+applyFilters();
+buildPhaseTabs();
+renderPhaseDetail(0);
+buildRevenueTable();
+buildRiskTable();
+</script>
+</body>
+</html>
